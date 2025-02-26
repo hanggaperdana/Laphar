@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Gambar - Grid 2x3</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+	@font-face {
+        	font-family: 'BebasNeue';
+        	src: url('BebasNeue-Regular.otf') format('opentype');
+   	}
+        * {
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            text-align: center;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+            padding: 60px;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0px 5px 15px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #333;
+        }
+        .form-group {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            font-weight: 600;
+            color: #444;
+        }
+        input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+            transition: 0.3s;
+        }
+        input[type="text"]:focus {
+            border-color: #007bff;
+        }
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .preview-box {
+            width: 30%;
+            aspect-ratio: 4 / 3;
+            border: 2px dashed #bbb;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #f8f8f8;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .preview-box:hover {
+            border-color: #007bff;
+        }
+        .preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .logo {
+            width: 100%;
+            max-width: 250px;
+	    margin-top : 50px;
+            margin-bottom: 80px;
+        }
+       .logo2 {
+            width: 100%;
+            max-width: 500px;
+	    margin-top : 15px;
+            margin-bottom: 20px;
+        }
+        button {
+            background: black;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        canvas {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0px 5px 15px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+        <img src="logoapp.png" alt="LAPHAR Logo" class="logo">
+       
+        <div class="form-group">
+            <label for="title">Judul:</label>
+            <input type="text" id="title" placeholder="Masukkan judul">
+        </div>
+
+        <div class="form-group">
+            <label>Upload Background (1:1)</label>
+<img src="bgharus.png" alt="LAPHAR Logo" class="logo2">
+            <input type="file" id="backgroundUpload" accept="image/*">
+        </div>
+
+        <div class="form-group">
+<br>
+            <label>Upload Gambar (Harus 6 Foto, Ratio 4:3)</label>
+<img src="fotoharus.png" alt="LAPHAR Logo" class="logo2">
+            <div class="preview-container">
+                <input type="file" id="imageUpload1" class="imageUpload" accept="image/*">
+                <input type="file" id="imageUpload2" class="imageUpload" accept="image/*">
+                <input type="file" id="imageUpload3" class="imageUpload" accept="image/*">
+                <input type="file" id="imageUpload4" class="imageUpload" accept="image/*">
+                <input type="file" id="imageUpload5" class="imageUpload" accept="image/*">
+                <input type="file" id="imageUpload6" class="imageUpload" accept="image/*">
+            </div>
+        </div>
+
+        <button onclick="generateCanvas()">Buat Gambar</button>
+
+        <!-- Tombol Download -->
+        <button id="downloadBtn" style="display: none;" onclick="downloadImage()">Download Gambar</button>
+        
+        <!-- Tombol Kembali -->
+        <button onclick="window.location.href='index.html'">Kembali ke Halaman Utama</button>
+
+        <canvas id="canvas" width="900" height="900"></canvas>
+    </div>
+
+<script>
+    function generateCanvas() {
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // Background
+        const bgInput = document.getElementById("backgroundUpload").files[0];
+        const titleText = document.getElementById("title").value;
+
+        // Gambar Grid (2x3)
+        const images = [];
+        for (let i = 1; i <= 6; i++) {
+            const fileInput = document.getElementById("imageUpload" + i).files[0];
+            if (fileInput) {
+                images.push(fileInput);
+            }
+        }
+
+        if (!bgInput || images.length < 6) {
+            alert("Silakan unggah background dan 6 gambar!");
+            return;
+        }
+
+        const bgImg = new Image();
+        bgImg.src = URL.createObjectURL(bgInput);
+        bgImg.onload = function () {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+
+            // Grid Image Placement (2x3)
+            let imgIndex = 0;
+            let cols = 2, rows = 3;
+            let gridWidth = canvas.width * 0.93; // 93% dari canvas
+            let gridHeight = gridWidth * (3 / 2) / 2; // Sesuai ratio 4:3 (2x3)
+            let startX = (canvas.width - gridWidth) / 2;
+            let startY = (canvas.height - gridHeight) / 2 - 50; // Posisi tengah
+
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    if (imgIndex >= images.length) break;
+                    const img = new Image();
+                    img.src = URL.createObjectURL(images[imgIndex]);
+                    imgIndex++;
+
+                    const x = startX + (gridWidth / cols) * col;
+                    const y = startY + (gridHeight / rows) * row;
+                    const imgWidth = gridWidth / cols;
+                    const imgHeight = gridHeight / rows;
+
+                    img.onload = function () {
+                        ctx.drawImage(img, x, y, imgWidth, imgHeight);
+
+                        // Menambahkan border 2px hitam di sekitar gambar
+                        ctx.strokeStyle = "white";
+                        ctx.lineWidth = 10;
+                        ctx.strokeRect(x, y, imgWidth, imgHeight);
+                    };
+                }
+            }
+
+            // Judul (Menggunakan wrapText agar tidak melebihi batas)
+            ctx.fillStyle = "black";
+            ctx.font = "bold 35px BebasNeue";
+            ctx.textAlign = "center";
+
+            let maxTextWidth = canvas.width * 0.95; // Maksimal 80% lebar canvas
+            let textX = canvas.width / 2;
+            let textY = startY + gridHeight + 60;
+            let lineHeight = 45; // Jarak antar baris
+
+            wrapText(ctx, titleText, textX, textY, maxTextWidth, lineHeight);
+
+            // Show the download button
+            document.getElementById("downloadBtn").style.display = "inline-block";
+        };
+    }
+
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+        let words = text.split(" ");
+        let line = "";
+        let lines = [];
+        
+        for (let i = 0; i < words.length; i++) {
+            let testLine = line + words[i] + " ";
+            let testWidth = ctx.measureText(testLine).width;
+
+            if (testWidth > maxWidth && i > 0) {
+                lines.push(line);
+                line = words[i] + " ";
+            } else {
+                line = testLine;
+            }
+        }
+        lines.push(line); // Tambahkan baris terakhir
+
+        // Pastikan teks tetap dalam batas tinggi tertentu
+        let maxLines = 2; // Batasi maksimal 3 baris
+        let startY = y;
+
+        for (let i = 0; i < Math.min(lines.length, maxLines); i++) {
+            ctx.fillText(lines[i], x, startY);
+            startY += lineHeight;
+        }
+    }
+
+    function downloadImage() {
+        const canvas = document.getElementById("canvas");
+        const link = document.createElement("a");
+        link.href = canvas.toDataURL("image/png");
+        link.download = "hasil-gambar.png";
+        link.click();
+    }
+</script>
+
+
+</body>
+</html>
