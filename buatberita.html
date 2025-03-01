@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Pembuatan Berita</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.logo {
+            width: 100%;
+            max-width: 250px;
+	    margin-top : 50px;
+            margin-bottom: 80px;
+        }
+        h2 {
+            color: #007bff;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 6px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        button {
+            background-color: black;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #333;
+        }
+        .back-btn {
+            display: inline-block;
+            text-decoration: none;
+            background-color: black;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="logoapp.png" alt="LAPHAR Logo" class="logo">
+        <input type="text" id="namaKegiatan" placeholder="Nama Kegiatan">
+        <input type="text" id="tempatKegiatan" placeholder="Tempat/Pelaksanaan Kegiatan">
+        <input type="text" id="tanggal" placeholder="Hari dan Tanggal">
+        <input type="text" id="orangTerlibat" placeholder="Orang yang Terlibat">
+        
+        <h3>Data Narasumber</h3>
+        <input type="text" id="narasumber1" placeholder="Nama Narasumber 1">
+        <textarea id="pernyataan1" placeholder="Pernyataan Narasumber 1"></textarea>
+        
+        <input type="text" id="narasumber2" placeholder="Nama Narasumber 2">
+        <textarea id="pernyataan2" placeholder="Pernyataan Narasumber 2"></textarea>
+        
+        <input type="text" id="narasumber3" placeholder="Nama Narasumber 3">
+        <textarea id="pernyataan3" placeholder="Pernyataan Narasumber 3"></textarea>
+        
+        <input type="text" id="narasumber4" placeholder="Nama Narasumber 4">
+        <textarea id="pernyataan4" placeholder="Pernyataan Narasumber 4"></textarea>
+        
+        <input type="text" id="narasumber5" placeholder="Nama Narasumber 5">
+        <textarea id="pernyataan5" placeholder="Pernyataan Narasumber 5"></textarea>
+        
+        <textarea id="keteranganLain" placeholder="Keterangan Lain"></textarea>
+        
+        <button onclick="generateBerita()">Buat Berita</button>
+        <button onclick="copyBerita()">Copy</button>
+        <a href="index.html" class="back-btn">Kembali</a>
+        
+        <h3>Hasil Berita</h3>
+        <div id="hasilBerita" style="text-align: left; white-space: pre-line;"></div>
+
+    </div>
+<br>
+    <div class="footer">&copy; 2025 @hanggaperdana</div>
+
+    <script>
+        function generateBerita() {
+            let namaKegiatan = document.getElementById("namaKegiatan").value;
+            let tempatKegiatan = document.getElementById("tempatKegiatan").value;
+            let tanggal = document.getElementById("tanggal").value;
+            let orangTerlibat = document.getElementById("orangTerlibat").value;
+            let narasumber1 = document.getElementById("narasumber1").value;
+            let pernyataan1 = document.getElementById("pernyataan1").value;
+            let narasumber2 = document.getElementById("narasumber2").value;
+            let pernyataan2 = document.getElementById("pernyataan2").value;
+            let narasumber3 = document.getElementById("narasumber3").value;
+            let pernyataan3 = document.getElementById("pernyataan3").value;
+            let narasumber4 = document.getElementById("narasumber4").value;
+            let pernyataan4 = document.getElementById("pernyataan4").value;
+            let narasumber5 = document.getElementById("narasumber5").value;
+            let pernyataan5 = document.getElementById("pernyataan5").value;
+            let keteranganLain = document.getElementById("keteranganLain").value;
+
+            let berita = `${tempatKegiatan} - ${namaKegiatan}. ${orangTerlibat}.
+
+${pernyataan1} kata ${narasumber1}.
+${pernyataan2} ungkap ${narasumber2}.
+${pernyataan3} ujar ${narasumber3}.
+${pernyataan4} menurut ${narasumber4}.
+${pernyataan5} tambah ${narasumber5}.
+
+${keteranganLain}`;
+
+            document.getElementById("hasilBerita").textContent = berita;
+        }
+
+        function copyBerita() {
+            let berita = document.getElementById("hasilBerita").textContent;
+            navigator.clipboard.writeText(berita);
+            alert("Berita telah disalin!");
+        }
+    </script>
+</body>
+</html>
