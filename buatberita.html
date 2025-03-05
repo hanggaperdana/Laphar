@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Pembuatan Berita</title>
+    <title>Buat Berita Manual - LAPHAR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -23,8 +24,8 @@
         .logo {
             width: 100%;
             max-width: 250px;
-	    margin-top : 50px;
-            margin-bottom: 80px;
+            margin-top : 50px;
+            margin-bottom: 40px;
         }
         label {
             display: block;
@@ -52,115 +53,112 @@
             font-size: 16px;
             border-radius: 5px;
             transition: all 0.3s;
-
         }
-        button {
+        .btn:hover { background: #333; }
+        .footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+        .back-button, .copy-button {
             background-color: black;
             color: white;
-            border: none;
-            padding: 12px 20px;
+            padding: 12px;
             font-size: 16px;
-            margin: 10px;
             border-radius: 5px;
+            margin-top: 10px;
             cursor: pointer;
-            transition: 0.3s;
+            width: 75%;
+            transition: all 0.3s;
         }
-        button:hover {
+        .back-button:hover, .copy-button:hover {
             background-color: #333;
-        }
-        .back-btn {
-            display: inline-block;
-            text-decoration: none;
-            background-color: black;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 5px;
-            font-size: 16px;
-            margin: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <img src="logoapp.png" alt="LAPHAR Logo" class="logo">
+        
+        <label for="title">Judul Berita:</label>
+        <input type="text" id="title" placeholder="Masukkan judul berita (misalnya: Pemerintah Kota Yogyakarta Luncurkan Program Smart City)" required>
 
-	<label for="namaKegiatan">Nama Kegiatan:</label>
-        <input type="text" id="namaKegiatan" placeholder="Nama Kegiatan">
+        <label for="date">Tanggal Berita:</label>
+        <input type="date" id="date" required>
 
-	<label for="tempatkegiatan">Tempat/Pelaksanaan Kegiatan:</label>
-        <input type="text" id="tempatKegiatan" placeholder="Tempat/Pelaksanaan Kegiatan">
-	
-	<label for="haridantanggal">Hari dan Tanggal:</label>
-        <input type="text" id="tanggal" placeholder="Hari dan Tanggal">
-	
-	<label for="orangyangterlibat">Orang yang Terlibat:</label>
-        <input type="text" id="orangTerlibat" placeholder="Orang yang Terlibat">
-        
-        <h3>Data Narasumber</h3>
-        <input type="text" id="narasumber1" placeholder="Nama Narasumber 1">
-        <textarea id="pernyataan1" placeholder="Pernyataan Narasumber 1"></textarea>
-        
-        <input type="text" id="narasumber2" placeholder="Nama Narasumber 2">
-        <textarea id="pernyataan2" placeholder="Pernyataan Narasumber 2"></textarea>
-        
-        <input type="text" id="narasumber3" placeholder="Nama Narasumber 3">
-        <textarea id="pernyataan3" placeholder="Pernyataan Narasumber 3"></textarea>
-        
-        <input type="text" id="narasumber4" placeholder="Nama Narasumber 4">
-        <textarea id="pernyataan4" placeholder="Pernyataan Narasumber 4"></textarea>
-        
-        <input type="text" id="narasumber5" placeholder="Nama Narasumber 5">
-        <textarea id="pernyataan5" placeholder="Pernyataan Narasumber 5"></textarea>
-        
-        <textarea id="keteranganLain" placeholder="Keterangan Lain"></textarea>
-        
-        <button onclick="generateBerita()">Buat Berita</button>
-        <button onclick="copyBerita()">Copy</button>
-        <a href="index.html" class="back-btn">Kembali</a>
-        
-        <h3>Hasil Berita</h3>
-        <div id="hasilBerita" style="text-align: left; white-space: pre-line;"></div>
+        <label for="location">Lokasi Berita:</label>
+        <input type="text" id="location" placeholder="Masukkan lokasi kejadian (misalnya: Yogyakarta)" required>
 
+        <label for="person">Nama Anggota/Orang Terkait:</label>
+        <input type="text" id="person" placeholder="Masukkan nama orang yang terlibat dalam berita (misalnya: Haryadi Suyuti)" required>
+
+        <label for="main_statement">Pernyataan Utama:</label>
+        <textarea id="main_statement" placeholder="Tuliskan pernyataan utama atau inti dari berita di sini" required></textarea>
+
+        <label for="additional_statement">Pernyataan Lanjutan:</label>
+        <textarea id="additional_statement" placeholder="Masukkan informasi tambahan, seperti tindakan atau reaksi setelah kejadian"></textarea>
+
+        <label for="analysis">Pendapat atau Analisis:</label>
+        <textarea id="analysis" placeholder="Jika ada analisis atau pendapat terkait kejadian, masukkan di sini"></textarea>
+
+        <label for="reference">Referensi/Pernyataan Pihak Lain:</label>
+        <textarea id="reference" placeholder="Masukkan referensi dari pihak lain (misalnya: Kepala Badan Pangan Nasional)"></textarea>
+
+        <label for="closing">Penutupan Berita:</label>
+        <textarea id="closing" placeholder="Tuliskan penutupan atau kesimpulan dari berita di sini"></textarea>
+
+        <button class="btn" onclick="generateReport()">Buat Berita</button>
+
+        <h3>Hasil Berita:</h3>
+        <textarea id="news-result" readonly></textarea>
+
+        <button id="copy-btn" class="copy-button" style="display:none;">Salin Berita</button>
+        <button class="back-button" onclick="window.location.href='index.html'">Kembali</button>
     </div>
-<br>
+
     <div class="footer">&copy; 2025 @hanggaperdana</div>
 
     <script>
-        function generateBerita() {
-            let namaKegiatan = document.getElementById("namaKegiatan").value;
-            let tempatKegiatan = document.getElementById("tempatKegiatan").value;
-            let tanggal = document.getElementById("tanggal").value;
-            let orangTerlibat = document.getElementById("orangTerlibat").value;
-            let narasumber1 = document.getElementById("narasumber1").value;
-            let pernyataan1 = document.getElementById("pernyataan1").value;
-            let narasumber2 = document.getElementById("narasumber2").value;
-            let pernyataan2 = document.getElementById("pernyataan2").value;
-            let narasumber3 = document.getElementById("narasumber3").value;
-            let pernyataan3 = document.getElementById("pernyataan3").value;
-            let narasumber4 = document.getElementById("narasumber4").value;
-            let pernyataan4 = document.getElementById("pernyataan4").value;
-            let narasumber5 = document.getElementById("narasumber5").value;
-            let pernyataan5 = document.getElementById("pernyataan5").value;
-            let keteranganLain = document.getElementById("keteranganLain").value;
+        function generateReport() {
+            let title = document.getElementById("title").value.trim();
+            let date = document.getElementById("date").value.trim();
+            let location = document.getElementById("location").value.trim();
+            let person = document.getElementById("person").value.trim();
+            let main_statement = document.getElementById("main_statement").value.trim();
+            let additional_statement = document.getElementById("additional_statement").value.trim();
+            let analysis = document.getElementById("analysis").value.trim();
+            let reference = document.getElementById("reference").value.trim();
+            let closing = document.getElementById("closing").value.trim();
 
-            let berita = `${tempatKegiatan} - ${namaKegiatan}. ${orangTerlibat}.
+            if (!title || !date || !location || !person || !main_statement || !closing) {
+                alert("Mohon isi semua kolom sebelum membuat laporan!");
+                return;
+            }
 
-${pernyataan1} kata ${narasumber1}.
-${pernyataan2} ungkap ${narasumber2}.
-${pernyataan3} ujar ${narasumber3}.
-${pernyataan4} menurut ${narasumber4}.
-${pernyataan5} tambah ${narasumber5}.
+            // Hasil berita dalam format paragraf yang lebih terstruktur
+            let newsArticle = `${location} – ${main_statement}
 
-${keteranganLain}`;
+${additional_statement}
 
-            document.getElementById("hasilBerita").textContent = berita;
+Menurut ${person}, ${analysis}
+
+${reference}
+
+${closing}`;
+
+            document.getElementById("news-result").value = newsArticle;
+            document.getElementById("copy-btn").style.display = "inline-block";
         }
 
-        function copyBerita() {
-            let berita = document.getElementById("hasilBerita").textContent;
-            navigator.clipboard.writeText(berita);
-            alert("Berita telah disalin!");
-        }
+        // Fungsi untuk menyalin berita ke clipboard
+        document.getElementById('copy-btn').addEventListener('click', function() {
+            const newsResult = document.getElementById('news-result').value;
+            navigator.clipboard.writeText(newsResult).then(function() {
+                alert('Berita berhasil disalin ke clipboard!');
+            }).catch(function(err) {
+                console.error('Gagal menyalin berita:', err);
+            });
+        });
     </script>
 </body>
 </html>
