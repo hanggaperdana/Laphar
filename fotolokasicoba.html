@@ -27,15 +27,20 @@
             margin-top: 30px;
             margin-bottom: 40px;
         }
+        #camera-container {
+            margin: 20px 0;
+        }
+        video, canvas {
+            width: 100%;
+            max-width: 100%;
+            aspect-ratio: 9 / 16;
+            border-radius: 10px;
+            border: 2px solid #007bff;
+        }
         #timestamp {
             font-size: 16px;
             font-weight: bold;
             color: black;
-            margin-bottom: 10px;
-        }
-        #location {
-            font-size: 18px;
-            font-weight: bold;
             margin-bottom: 10px;
         }
         .button-group {
@@ -65,12 +70,6 @@
             text-decoration: none;
             border-radius: 5px;
         }
-        #image-preview {
-            width: 100%;
-            max-width: 100%;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
@@ -79,45 +78,81 @@
         <div id="timestamp">Memuat...</div>
         <p id="location">Menunggu lokasi...</p>
 
-        <input type="file" id="image-upload" accept="image/*">
-        <img id="image-preview" style="display:none;" alt="Preview Gambar">
-
+        <div id="camera-container">
+            <video id="video" autoplay></video>
+            <div class="button-group">
+                <button onclick="takePhoto()">Ambil Foto</button>
+                <button onclick="toggleCamera()">Ganti Kamera</button>
+            </div>
+            <canvas id="canvas" style="display:none;"></canvas>
+        </div>
+        
         <button id="download-btn" style="display:none;" onclick="downloadPhoto()">Unduh Gambar</button>
         <a href="index.html" class="back-btn">Kembali</a>
     </div>
 
     <script>
-        // Fungsi untuk mendapatkan lokasi dari GPS ponsel
-        function getGeolocation() {
+        let video = document.getElementById("video");
+        let currentFacingMode = "user";
+
+        function startCamera(facingMode) {
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: facingMode, aspectRatio: 9/16 } })
+                .then(stream => {
+                    video.srcObject = stream;
+                })
+                .catch(err => console.error("Akses kamera ditolak", err));
+        }
+
+        function toggleCamera() {
+            currentFacingMode = (currentFacingMode === "user") ? "environment" : "user";
+            startCamera(currentFacingMode);
+        }
+
+        startCamera(currentFacingMode);
+
+        function takePhoto() {
+            let canvas = document.getElementById("canvas");
+            let context = canvas.getContext("2d");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            document.getElementById("download-btn").style.display = "block";
+            canvas.style.display = "block";
+        }
+
+        function downloadPhoto() {
+            let canvas = document.getElementById("canvas");
+            let link = document.createElement("a");
+            link.download = "foto_timestamp.png";
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        }
+
+        // Fungsi untuk mendapatkan lokasi pengguna
+        function getLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(showPosition, showError);
             } else {
-                document.getElementById("location").innerHTML = "Geolokasi tidak didukung oleh browser ini.";
+                document.getElementById("location").innerHTML = "Geolocation tidak didukung oleh browser ini.";
             }
         }
 
-        // Menampilkan posisi yang didapat
         function showPosition(position) {
             let latitude = position.coords.latitude;
             let longitude = position.coords.longitude;
-            let locationText = `Lat: ${latitude}, Lon: ${longitude}`;
-            document.getElementById("location").innerHTML = locationText;
-
-            // Jika kamu ingin menambahkan nama lokasi menggunakan geocoding API
-            getLocationName(latitude, longitude);
+            document.getElementById("location").innerHTML = `Lokasi: Latitude: ${latitude}, Longitude: ${longitude}`;
         }
 
-        // Menangani error jika geolokasi tidak berhasil
         function showError(error) {
             switch(error.code) {
                 case error.PERMISSION_DENIED:
-                    document.getElementById("location").innerHTML = "Pengguna menolak permintaan geolokasi.";
+                    document.getElementById("location").innerHTML = "Pengguna menolak permintaan lokasi.";
                     break;
                 case error.POSITION_UNAVAILABLE:
-                    document.getElementById("location").innerHTML = "Informasi lokasi tidak tersedia.";
+                    document.getElementById("location").innerHTML = "Lokasi tidak tersedia.";
                     break;
                 case error.TIMEOUT:
-                    document.getElementById("location").innerHTML = "Permintaan geolokasi telah timeout.";
+                    document.getElementById("location").innerHTML = "Waktu permintaan lokasi habis.";
                     break;
                 case error.UNKNOWN_ERROR:
                     document.getElementById("location").innerHTML = "Terjadi kesalahan yang tidak diketahui.";
@@ -125,70 +160,8 @@
             }
         }
 
-        // Fungsi untuk mendapatkan nama lokasi berdasarkan koordinat (menggunakan OpenCage API)
-        function getLocationName(lat, lon) {
-            const apiKey = 'YOUR_OPENCAGE_API_KEY'; // Ganti dengan API Key OpenCage
-            const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=${apiKey}`;
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.results && data.results.length > 0) {
-                        const address = data.results[0].formatted;
-                        document.getElementById("location").innerHTML = `Lokasi: ${address}`;
-                    } else {
-                        document.getElementById("location").innerHTML = "Tidak dapat menemukan nama lokasi.";
-                    }
-                })
-                .catch(err => {
-                    document.getElementById("location").innerHTML = "Terjadi kesalahan saat mengambil nama lokasi.";
-                    console.error(err);
-                });
-        }
-
-        // Menampilkan gambar setelah dipilih
-        const imageUpload = document.getElementById('image-upload');
-        const imagePreview = document.getElementById('image-preview');
-        
-        imageUpload.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    imagePreview.style.display = "block";
-                    imagePreview.src = event.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Fungsi untuk mengunduh gambar dengan timestamp
-        function downloadPhoto() {
-            let canvas = document.createElement("canvas");
-            let ctx = canvas.getContext("2d");
-
-            let img = new Image();
-            img.onload = function() {
-                canvas.width = img.width;
-                canvas.height = img.height;
-                ctx.drawImage(img, 0, 0);
-                // Menambahkan timestamp dan lokasi ke gambar
-                let timestamp = new Date().toLocaleString();
-                ctx.font = "20px Arial";
-                ctx.fillStyle = "white";
-                ctx.fillText(`Timestamp: ${timestamp}`, 10, 30);
-                ctx.fillText(`Lokasi: ${document.getElementById("location").innerText}`, 10, 60);
-
-                // Menyimpan gambar
-                let link = document.createElement("a");
-                link.download = "foto_timestamp.png";
-                link.href = canvas.toDataURL("image/png");
-                link.click();
-            };
-            img.src = imagePreview.src;
-        }
-
-        // Memulai geolokasi saat halaman dimuat
-        window.onload = getGeolocation;
+        // Memanggil fungsi untuk mendapatkan lokasi saat halaman dimuat
+        getLocation();
     </script>
 </body>
 </html>
