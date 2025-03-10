@@ -161,18 +161,24 @@ Wassalamualaikum Wr. Wb.
         }
 
         function copyReport() {
-            let outputText = document.getElementById("output").value;
-            if (outputText.trim() === "") {
-                alert("Tidak ada laporan yang bisa disalin!");
-                return;
-            }
+    let outputText = document.getElementById("output");
 
-            navigator.clipboard.writeText(outputText).then(() => {
-                alert("Laporan berhasil disalin!");
-            }).catch(err => {
-                console.error("Gagal menyalin laporan: ", err);
-            });
-        }
+    if (!outputText.value.trim()) {
+        alert("Tidak ada laporan yang bisa disalin!");
+        return;
+    }
+
+    // Pilih teks dalam textarea
+    outputText.select();
+    outputText.setSelectionRange(0, 99999); // Untuk mendukung di perangkat mobile
+
+    // Salin teks menggunakan metode lama
+    if (document.execCommand("copy")) {
+        alert("Laporan berhasil disalin!");
+    } else {
+        alert("Gagal menyalin laporan, silakan salin secara manual.");
+    }
+}
     </script>
 </body>
 </html>
