@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timestamp Camera</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .logo {
+            width: 100%;
+            max-width: 250px;
+            margin-top: 30px;
+            margin-bottom: 40px;
+        }
+        #timestamp {
+            font-size: 16px;
+            font-weight: bold;
+            color: black;
+            margin-bottom: 10px;
+        }
+        #location {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        button {
+            background-color: black;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #333;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 15px;
+            background: black;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        #image-preview {
+            width: 100%;
+            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="logoapp.png" alt="LAPHAR Logo" class="logo">
+        <div id="timestamp">Memuat...</div>
+        <p id="location">Menunggu lokasi...</p>
+
+        <input type="file" id="image-upload" accept="image/*">
+        <img id="image-preview" style="display:none;" alt="Preview Gambar">
+
+        <button id="download-btn" style="display:none;" onclick="downloadPhoto()">Unduh Gambar</button>
+        <a href="index.html" class="back-btn">Kembali</a>
+    </div>
+
+    <script>
+        // Fungsi untuk mendapatkan lokasi dari GPS ponsel
+        function getGeolocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                document.getElementById("location").innerHTML = "Geolokasi tidak didukung oleh browser ini.";
+            }
+        }
+
+        // Menampilkan posisi yang didapat
+        function showPosition(position) {
+            let latitude = position.coords.latitude;
+            let longitude = position.coords.longitude;
+            let locationText = `Lat: ${latitude}, Lon: ${longitude}`;
+            document.getElementById("location").innerHTML = locationText;
+
+            // Jika kamu ingin menambahkan nama lokasi menggunakan geocoding API
+            getLocationName(latitude, longitude);
+        }
+
+        // Menangani error jika geolokasi tidak berhasil
+        function showError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    document.getElementById("location").innerHTML = "Pengguna menolak permintaan geolokasi.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    document.getElementById("location").innerHTML = "Informasi lokasi tidak tersedia.";
+                    break;
+                case error.TIMEOUT:
+                    document.getElementById("location").innerHTML = "Permintaan geolokasi telah timeout.";
+                    break;
+                case error.UNKNOWN_ERROR:
+                    document.getElementById("location").innerHTML = "Terjadi kesalahan yang tidak diketahui.";
+                    break;
+            }
+        }
+
+        // Fungsi untuk mendapatkan nama lokasi berdasarkan koordinat (menggunakan OpenCage API)
+        function getLocationName(lat, lon) {
+            const apiKey = 'YOUR_OPENCAGE_API_KEY'; // Ganti dengan API Key OpenCage
+            const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=${apiKey}`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.results && data.results.length > 0) {
+                        const address = data.results[0].formatted;
+                        document.getElementById("location").innerHTML = `Lokasi: ${address}`;
+                    } else {
+                        document.getElementById("location").innerHTML = "Tidak dapat menemukan nama lokasi.";
+                    }
+                })
+                .catch(err => {
+                    document.getElementById("location").innerHTML = "Terjadi kesalahan saat mengambil nama lokasi.";
+                    console.error(err);
+                });
+        }
+
+        // Menampilkan gambar setelah dipilih
+        const imageUpload = document.getElementById('image-upload');
+        const imagePreview = document.getElementById('image-preview');
+        
+        imageUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    imagePreview.style.display = "block";
+                    imagePreview.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Fungsi untuk mengunduh gambar dengan timestamp
+        function downloadPhoto() {
+            let canvas = document.createElement("canvas");
+            let ctx = canvas.getContext("2d");
+
+            let img = new Image();
+            img.onload = function() {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                // Menambahkan timestamp dan lokasi ke gambar
+                let timestamp = new Date().toLocaleString();
+                ctx.font = "20px Arial";
+                ctx.fillStyle = "white";
+                ctx.fillText(`Timestamp: ${timestamp}`, 10, 30);
+                ctx.fillText(`Lokasi: ${document.getElementById("location").innerText}`, 10, 60);
+
+                // Menyimpan gambar
+                let link = document.createElement("a");
+                link.download = "foto_timestamp.png";
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            };
+            img.src = imagePreview.src;
+        }
+
+        // Memulai geolokasi saat halaman dimuat
+        window.onload = getGeolocation;
+    </script>
+</body>
+</html>
