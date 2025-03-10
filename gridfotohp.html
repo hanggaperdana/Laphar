@@ -112,42 +112,6 @@
             margin-top: 20px;
             box-shadow: 0px 5px 15px rgba(0,0,0,0.2);
         }
-
-        /* Media Query for smaller screens (e.g., phones) */
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-
-            .logo {
-                max-width: 200px;
-                margin-top: 30px;
-                margin-bottom: 50px;
-            }
-
-            .logo2 {
-                max-width: 400px;
-                margin-top: 10px;
-                margin-bottom: 15px;
-            }
-
-            h2 {
-                font-size: 28px;
-            }
-
-            .form-group {
-                margin-bottom: 10px;
-            }
-
-            button {
-                padding: 12px 20px;
-                font-size: 14px;
-            }
-
-            canvas {
-                max-width: 100%;
-            }
-        }
     </style>
 </head>
 <body>
@@ -251,38 +215,59 @@
             }
 
             // Judul (Menggunakan wrapText agar tidak melebihi batas)
-            ctx.fillStyle = "black";
-            ctx.font = "bold 35px BebasNeue";
-            ctx.textAlign = "center";
-            wrapText(ctx, titleText, canvas.width / 2, 50, canvas.width * 0.8, 40);
+ctx.fillStyle = "black";
+ctx.font = "bold 35px BebasNeue";
+ctx.textAlign = "center";
+
+let maxTextWidth = canvas.width * 0.95; // Maksimal 80% lebar canvas
+let textX = canvas.width / 2;
+let textY = startY + gridHeight + 60 + 20; // Menurunkan posisi teks lebih banyak
+let lineHeight = 45; // Jarak antar baris
+
+wrapText(ctx, titleText, textX, textY, maxTextWidth, lineHeight);
+
+            // Show the download button
+            document.getElementById("downloadBtn").style.display = "inline-block";
         };
     }
 
-    // Fungsi untuk mem-bungkus teks pada judul
-    function wrapText(context, text, x, y, maxWidth, lineHeight) {
-        const words = text.split(' ');
-        let line = '';
-        for (let n = 0; n < words.length; n++) {
-            let testLine = line + words[n] + ' ';
-            let testWidth = context.measureText(testLine).width;
-            if (testWidth > maxWidth && n > 0) {
-                context.fillText(line, x, y);
-                line = words[n] + ' ';
-                y += lineHeight;
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+        let words = text.split(" ");
+        let line = "";
+        let lines = [];
+        
+        for (let i = 0; i < words.length; i++) {
+            let testLine = line + words[i] + " ";
+            let testWidth = ctx.measureText(testLine).width;
+
+            if (testWidth > maxWidth && i > 0) {
+                lines.push(line);
+                line = words[i] + " ";
             } else {
                 line = testLine;
             }
         }
-        context.fillText(line, x, y);
+        lines.push(line); // Tambahkan baris terakhir
+
+        // Pastikan teks tetap dalam batas tinggi tertentu
+        let maxLines = 2; // Batasi maksimal 3 baris
+        let startY = y;
+
+        for (let i = 0; i < Math.min(lines.length, maxLines); i++) {
+            ctx.fillText(lines[i], x, startY);
+            startY += lineHeight;
+        }
     }
 
     function downloadImage() {
         const canvas = document.getElementById("canvas");
         const link = document.createElement("a");
-        link.download = "generated-image.png";
-        link.href = canvas.toDataURL();
+        link.href = canvas.toDataURL("image/png");
+        link.download = "hasil-gambar.png";
         link.click();
     }
 </script>
+
+
 </body>
 </html>
