@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAPHAR - BNN Provinsi Jawa Tengah</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #eef2f3;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            background: white;
+            padding: 60px;
+            margin: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .logo {
+            width: 100%;
+            max-width: 250px;
+            margin-top: 50px;
+            margin-bottom: 80px;
+        }
+        label {
+            display: block;
+            text-align: left;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 6px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        textarea { height: 150px; }
+        .btn {
+            width: 75%;
+            background: black;
+            color: white;
+            border: none;
+            padding: 12px;
+            margin-top: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        .btn:hover { background: #333; }
+        .footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+    <script>
+        function preventBack(){window.history.forward();}
+        setTimeout("preventBack()", 0);
+        window.onunload=function(){null};
+    </script>
+</head>
+<body>
+    <div class="container">
+        <img src="logoapp.png" alt="LAPHAR Logo" class="logo">
+        <h1 style="color: red;">SUPER USER (ADMIN)</h1>
+        
+        <label for="namaKegiatan">Nama Kegiatan:</label>
+        <input type="text" id="namaKegiatan" placeholder="Contoh: Seminar Pencegahan Narkoba">
+
+        <label for="tanggal">Hari/Tanggal:</label>
+        <input type="text" id="tanggal" placeholder="Contoh: Jumat, 21 Februari 2025">
+
+        <label for="waktu">Waktu:</label>
+        <input type="text" id="waktu" placeholder="Contoh: 09.00 - selesai">
+
+        <label for="tempat">Tempat:</label>
+        <input type="text" id="tempat" placeholder="Contoh: Aula Fakultas Dakwah UIN Semarang">
+
+        <label for="pelaksanaPeserta">Pelaksana dan Peserta:</label>
+        <textarea id="pelaksanaPeserta" placeholder="Contoh: Mahasiswa, Dosen, BNN Jawa Tengah"></textarea>
+
+        <label for="uraian">Uraian Kegiatan:</label>
+        <textarea id="uraian" placeholder="Jelaskan kegiatan..."></textarea>
+        
+        <button class="btn" onclick="generateReport()">Buat Laporan</button>
+
+        <h3>Hasil Laporan:</h3>
+        <textarea id="output" readonly></textarea>
+        <button class="btn" onclick="copyReport()">Copy Laporan</button>
+        <button class="btn" onclick="window.open('https://chat.openai.com', '_blank')">Masuk ke-AI</button>
+        <button class="btn" onclick="window.location.href='index.html'">Kembali</button>
+    </div>
+
+    <div class="footer">&copy; 2025 @hanggaperdana</div>
+
+    <script>
+        function generateReport() {
+            let namaKegiatan = document.getElementById("namaKegiatan").value.trim();
+            let tanggal = document.getElementById("tanggal").value.trim();
+            let waktu = document.getElementById("waktu").value.trim();
+            let tempat = document.getElementById("tempat").value.trim();
+            let pelaksanaPeserta = document.getElementById("pelaksanaPeserta").value.trim();
+            let uraian = document.getElementById("uraian").value.trim();
+
+            if (!namaKegiatan || !tanggal || !waktu || !tempat || !pelaksanaPeserta || !uraian) {
+                alert("Mohon isi semua kolom sebelum membuat laporan!");
+                return;
+            }
+
+            let report = `Anda adalah seorang jurnalistik profesional yang bekerja di redaksi berita online terbaik yang pernah dimiliki negeri ini. Saya minta Anda membuat berita dari informasi ini:
+
+Nama Kegiatan: ${namaKegiatan}
+Hari/Tanggal: ${tanggal}
+Waktu: ${waktu}
+Tempat: ${tempat}
+Pelaksana dan Peserta: ${pelaksanaPeserta}
+Uraian Kegiatan: ${uraian}`;
+
+            document.getElementById("output").value = report;
+        }
+
+        function copyReport() {
+            let outputText = document.getElementById("output");
+
+            if (!outputText.value.trim()) {
+                alert("Tidak ada laporan yang bisa disalin!");
+                return;
+            }
+
+            outputText.select();
+            outputText.setSelectionRange(0, 99999);
+
+            if (document.execCommand("copy")) {
+                alert("Laporan berhasil disalin!");
+            } else {
+                alert("Gagal menyalin laporan, silakan salin secara manual.");
+            }
+        }
+    </script>
+</body>
+</html>

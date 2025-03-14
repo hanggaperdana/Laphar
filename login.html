@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Admin - LAPHAR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #eef2f3;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 400px;
+            background: white;
+            padding: 40px;
+            margin: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        .logo {
+            display: block;
+            margin: 0 auto 20px;
+            width: 100px;
+        }
+        label {
+            font-weight: 600;
+            display: block;
+            margin-top: 10px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .btn {
+            width: 100%;
+            background: black;
+            color: white;
+            border: none;
+            padding: 12px;
+            margin-top: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        .btn:hover { background: #333; }
+        .footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Login Admin</h2>
+        <label for="adminId">ID Admin:</label>
+        <input type="text" id="adminId" placeholder="Masukkan ID">
+        <label for="adminPassword">Password:</label>
+        <input type="password" id="adminPassword" placeholder="Masukkan Password">
+        <p id="errorMessage" class="error">ID atau Password salah!</p>
+        <button class="btn" onclick="checkLogin()">Login</button>
+    </div>
+   
+
+    <script>
+        function checkLogin() {
+            var id = document.getElementById("adminId").value;
+            var password = document.getElementById("adminPassword").value;
+
+            // ID dan password yang valid
+            var validId = "hanggaperdana";  
+            var validPassword = "goblok123";  
+
+            if (id === validId && password === validPassword) {
+                sessionStorage.setItem("isAdmin", "true"); 
+                window.location.href = "admin.html"; // Arahkan ke halaman admin
+            } else {
+                document.getElementById("errorMessage").style.display = "block";
+            }
+        }
+    </script>
+
+</body>
+</html>
